@@ -1,0 +1,93 @@
+# Install required packages
+!pip install nltk ipywidgets –quiet
+# Import modules
+import math
+import pandas as pd
+from collections import Counter
+from nltk.corpus import stopwords
+from nltk.tokenize import RegexpTokenizer
+from IPython.display import display
+import ipywidgets as widgets
+import nltk
+
+# Download stopwords only (no punkt needed)
+nltk.download('stopwords', quiet=True)
+
+# Initialize tokenizer (no punkt)
+tokenizer = RegexpTokenizer(r'\w+')
+
+# Preprocessing function without punkt
+def preprocess(document):
+    stop_words = set(stopwords.words('english'))
+    tokens = tokenizer.tokenize(document.lower())  # Tokenize using regex
+    words = [word for word in tokens if word not in stop_words]
+    return words
+
+# Compute term frequency
+def compute_tf(doc_words):
+    tf_scores = {}
+    total_words = len(doc_words)
+    word_counts = Counter(doc_words)
+    for word, count in word_counts.items():
+        tf_scores[word] = count / total_words
+    return tf_scores
+
+# Compute inverse document frequency
+def compute_idf(docs_words):
+    idf_scores = {}
+    total_docs = len(docs_words)
+    all_words = set(word for doc in docs_words for word in doc)
+    for word in all_words:
+        containing_docs = sum(1 for doc in docs_words if word in doc)
+        idf_scores[word] = math.log((total_docs + 1) / (containing_docs + 1)) + 1  # Smoothed IDF
+    return idf_scores
+
+# Compute TF-IDF
+def compute_tfidf(tf_scores, idf_scores):
+    tfidf = {}
+    for word, tf in tf_scores.items():
+        tfidf[word] = tf * idf_scores.get(word, 0)
+    return tfidf
+
+# User input widget
+user_input = widgets.Textarea(
+    value='',
+    placeholder='Enter your documents, one per line',
+    description='Input:',
+    layout=widgets.Layout(width='100%', height='150px')
+)
+
+# Button
+button = widgets.Button(description="Compute TF-IDF", button_style='success')
+
+# Output
+output = widgets.Output()
+
+# Button click function
+def on_button_clicked(b):
+    output.clear_output()
+
+       with output:
+        raw_input = user_input.value.strip()
+        if not raw_input:
+            print("❌ Please enter at least one document.")
+            return
+
+        # Split input by lines/documents
+        corpus = [line.strip() for line in raw_input.split('\n') if line.strip()]
+        processed_docs = [preprocess(doc) for doc in corpus]
+
+        tf_list = [compute_tf(doc) for doc in processed_docs]
+        idf_scores = compute_idf(processed_docs)
+        tfidf_list = [compute_tfidf(tf, idf_scores) for tf in tf_list]
+
+        tfidf_df = pd.DataFrame(tfidf_list).fillna(0)
+        tfidf_df.index = [f'Doc {i+1}' for i in range(len(corpus))]
+
+        print("✅ TF-IDF Matrix:")
+        display(tfidf_df)
+
+button.on_click(on_button_clicked)
+
+# Display input, button, and output
+display(user_input, button, output)
