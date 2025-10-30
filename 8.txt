@@ -1,0 +1,52 @@
+# Install required packages
+!pip install nltk scikit-learn
+
+import nltk
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.decomposition import TruncatedSVD, LatentDirichletAllocation
+
+# Download necessary NLTK data
+nltk.download('punkt')
+
+# 🔹 Sample Text Corpus
+documents = [
+    "Machine learning enables systems to learn automatically.",
+    "Natural language processing deals with human languages.",
+    "Artificial intelligence and machine learning are related fields.",
+    "Deep learning is a subset of machine learning.",
+    "Language models can generate human-like text."
+]
+
+# ✅ LSA (Latent Semantic Analysis)
+# Step 1: TF-IDF Vectorization
+tfidf_vectorizer = TfidfVectorizer(stop_words='english')
+tfidf_matrix = tfidf_vectorizer.fit_transform(documents)
+
+# Step 2: Apply Truncated SVD
+lsa_model = TruncatedSVD(n_components=2, random_state=42)
+lsa_matrix = lsa_model.fit_transform(tfidf_matrix)
+
+# Step 3: Show top terms per LSA topic
+lsa_terms = tfidf_vectorizer.get_feature_names_out()
+print("🔸 LSA Topics (Top Terms):\n")
+for i, comp in enumerate(lsa_model.components_):
+
+    terms_comp = zip(lsa_terms, comp)
+    sorted_terms = sorted(terms_comp, key=lambda x: x[1], reverse=True)[:5]
+    print(f"Topic {i + 1}: {[term for term, weight in sorted_terms]}")
+
+# ✅ LDA (Latent Dirichlet Allocation)
+# Step 1: Count Vectorization
+count_vectorizer = CountVectorizer(stop_words='english')
+count_data = count_vectorizer.fit_transform(documents)
+
+# Step 2: Apply LDA
+lda_model = LatentDirichletAllocation(n_components=2, random_state=42)
+lda_model.fit(count_data)
+
+# Step 3: Show top terms per LDA topic
+lda_terms = count_vectorizer.get_feature_names_out()
+print("\n🔸 LDA Topics (Top Terms):\n")
+for i, topic in enumerate(lda_model.components_):
+    top_terms = topic.argsort()[-5:][::-1]
+    print(f"Topic {i + 1}: {[lda_terms[j] for j in top_terms]}")
