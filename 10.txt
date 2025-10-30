@@ -1,0 +1,46 @@
+#Install dependencies
+!pip install -q gTTS spacy
+
+# Download English model for spaCy
+!python -m spacy download en_core_web_sm
+
+#Imports
+import spacy
+from gtts import gTTS
+from IPython.display import Audio, display
+
+#Load spaCy model
+nlp = spacy.load("en_core_web_sm")
+
+#Function to extract keywords using noun chunks and entities
+def extract_keywords_spacy(text):
+    doc = nlp(text)
+    keywords = set()
+    for chunk in doc.noun_chunks:
+        keywords.add(chunk.text.strip().lower())
+    for ent in doc.ents:
+        keywords.add(ent.text.strip().lower())
+    print("\n🔍 Top Keywords (spaCy):")
+    for kw in list(keywords)[:5]:
+        print("-", kw)
+
+#Text-to-Speech function
+def text_to_speech_gtts(text, filename="output.mp3"):
+    tts = gTTS(text)
+    tts.save(filename)
+    return Audio(filename)
+
+
+
+# Input text
+input_text = "Artificial Intelligence is changing the world of communication and automation."
+
+#Display input
+print("📝 Input Text:\n", input_text)
+
+#Extract keywords (no nltk!)
+extract_keywords_spacy(input_text)
+
+# Convert to speech
+print("\n🔊 Speaking the text using gTTS:")
+display(text_to_speech_gtts(input_text))
