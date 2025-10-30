@@ -1,0 +1,39 @@
+# Step 1: Install required libraries
+!pip install pandas scikit-learn
+
+# Step 2: Import libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score, classification_report
+
+# Step 3: Load SMS Spam Collection dataset
+# Dataset Source: https://archive.ics.uci.edu/ml/datasets/sms+spam+collection
+url = "https://raw.githubusercontent.com/justmarkham/pycon-2016-tutorial/master/data/sms.tsv"
+df = pd.read_csv(url, sep='\t', header=None, names=['label', 'text'])
+
+# Step 4: Train-test split
+X_train, X_test, y_train, y_test = train_test_split(df['text'], df['label'], test_size=0.2, random_state=42)
+
+# Step 5: Vectorize text using N-grams
+vectorizer = CountVectorizer(ngram_range=(1, 2))  # Unigrams + Bigrams
+X_train_vect = vectorizer.fit_transform(X_train)
+X_test_vect = vectorizer.transform(X_test)
+
+# Step 6: Train Naive Bayes classifier
+clf = MultinomialNB()
+clf.fit(X_train_vect, y_train)
+
+# Step 7: Predict
+y_pred = clf.predict(X_test_vect)
+
+# Step 8: Print predictions in requested format
+print("Predictions on Test Data:\n")
+for i, (text, pred) in enumerate(zip(X_test[:10], y_pred[:10]), 1):  # Limit to first 10 for readability
+
+    print(f"{i}. Statement: {text} => Predicted Label: {pred}")
+
+# Step 9: Evaluation
+print("\nAccuracy:", accuracy_score(y_test, y_pred))
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
