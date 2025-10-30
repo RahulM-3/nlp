@@ -1,0 +1,60 @@
+# Install required packages
+!pip install nltk scikit-learn
+
+import nltk
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+
+# Download NLTK tokenizer
+nltk.download('punkt')
+
+# 🔹 Sample Corpus
+documents = [
+    "The game of football is popular in Europe.",
+    "Basketball players train hard every day.",
+    "The election results were announced yesterday.",
+    "The president addressed the parliament with reforms.",
+    "A thrilling cricket match was played last night.",
+    "Political campaigns are gaining momentum.",
+    "The tennis tournament was won by a young player.",
+    "The new tax bill was passed in parliament.",
+    "Athletes prepare for the Olympic games.",
+    "Debates continue in the senate over healthcare."
+]
+
+# TF-IDF Vectorization
+vectorizer = TfidfVectorizer(stop_words='english')
+X = vectorizer.fit_transform(documents)
+
+# K-Means Clusteringtrue_k = 2  # You can change this to any number of clusters
+model = KMeans(n_clusters=true_k, random_state=42)
+model.fit(X)
+
+# Top Terms in Each Cluster
+print("🔸 Top terms per cluster:\n")
+order_centroids = model.cluster_centers_.argsort()[:, ::-1]
+terms = vectorizer.get_feature_names_out()
+
+for i in range(true_k):
+    print(f"Cluster {i + 1}:")
+    print([terms[ind] for ind in order_centroids[i, :5]])
+    print()
+
+# Predict Cluster for Each Document
+print("🔹 Document Clustering Result:\n")
+for i, doc in enumerate(documents):
+    print(f"Document {i + 1}: Cluster {model.labels_[i] + 1}")
+
+# Optional: Visualize with PCA (2D)
+pca = PCA(n_components=2)
+reduced_data = pca.fit_transform(X.toarray())
+
+plt.figure(figsize=(8, 5))
+plt.scatter(reduced_data[:, 0], reduced_data[:, 1], c=model.labels_, cmap='rainbow')
+plt.title("K-Means Clustering of Text Documents")
+plt.xlabel("PCA Component 1")
+plt.ylabel("PCA Component 2")
+plt.grid(True)
+plt.show()
