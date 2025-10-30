@@ -1,0 +1,41 @@
+import nltk
+from nltk.stem import PorterStemmer, LancasterStemmer, RegexpStemmer, SnowballStemmer, WordNetLemmatizer
+from nltk.tokenize import word_tokenize
+
+# Download resources (run once)
+nltk.download('punkt')
+nltk.download('wordnet')
+nltk.download('omw-1.4')  # Optional for WordNet
+
+# Sample text
+text = "The children are playing with their toys while running and singing happily."
+
+# Tokenize text
+tokens = word_tokenize(text)
+
+# Initialize stemmers and lemmatizer
+porter = PorterStemmer()
+lancaster = LancasterStemmer()
+regexp = RegexpStemmer('ing$|s$|ed$', min=4)
+snowball = SnowballStemmer(language='english')
+lemmatizer = WordNetLemmatizer()
+
+# Display results
+print("Original Words:\n", tokens)
+
+print("\n🔹 PorterStemmer:")
+print([porter.stem(word) for word in tokens])
+
+print("\n🔹 LancasterStemmer:")
+print([lancaster.stem(word) for word in tokens])
+
+
+
+print("\n🔹 RegexpStemmer (removes 'ing', 's', 'ed'):")
+print([regexp.stem(word) for word in tokens])
+
+print("\n🔹 SnowballStemmer:")
+print([snowball.stem(word) for word in tokens])
+
+print("\n🔹 WordNetLemmatizer (lemmatization):")
+print([lemmatizer.lemmatize(word) for word in tokens])
