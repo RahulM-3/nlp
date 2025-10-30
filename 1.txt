@@ -1,0 +1,114 @@
+# Install NLTK
+!pip install nltk
+import nltk
+from nltk import word_tokenize, pos_tag, RegexpParser
+
+# Download required NLTK resources
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('punkt_tab')
+nltk.download('averaged_perceptron_tagger_eng')
+
+# Step 1: Ask the user for input
+text = input("Enter your sentence: ")
+
+# Step 2: Tokenize the sentence
+tokens = word_tokenize(text)
+
+# Step 3: POS tagging
+pos_tags = pos_tag(tokens)
+print("\nPart-of-Speech (POS) Tags:")
+for word, tag in pos_tags:
+    print(f"{word}: {tag}")
+
+# Step 4: Define chunk grammar (e.g., Noun Phrase)
+# NP: Noun Phrase = optional Determiner (DT), 0+ Adjective (JJ), 1 Noun (NN or NNS)
+grammar = "NP: {<DT>?<JJ>*<NN|NNS>}"
+
+# Step 5: Create chunk parser
+chunk_parser = RegexpParser(grammar)
+
+# Step 6: Apply chunking to POS-tagged sentence
+chunked_tree = chunk_parser.parse(pos_tags)
+
+# Step 7: Print chunked structure
+print("\nChunked Tree (Text Format):")
+print(chunked_tree.pformat())  # This prints the chunk tree as a formatted string
+
+# Step 8: If GUI supported locally, uncomment below line
+# chunked_tree.draw()
+1(B) – Named Entity Recognition (User Input)
+import nltk
+from nltk import word_tokenize, pos_tag, ne_chunk
+
+# Download required NLTK resources
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('maxent_ne_chunker')
+nltk.download('words')
+
+# Step 1: Input your text
+text = input("Enter your sentence: ")
+# Example: "Barack Obama was born in Hawaii and worked at the White House."
+
+# Step 2: Tokenize the text
+tokens = word_tokenize(text)
+
+# Step 3: POS tagging
+pos_tags = pos_tag(tokens)
+
+# Step 4: Named Entity Recognition
+ner_tree = ne_chunk(pos_tags)
+
+# Step 5: Print named entities
+print("\nNamed Entities:")
+for subtree in ner_tree:
+
+
+    if hasattr(subtree, 'label'):  # Check if it's a named entity subtree
+        entity_name = " ".join(token for token, pos in subtree.leaves())
+        entity_type = subtree.label()
+        print(f"{entity_name} ({entity_type})")
+    else:
+        pass  # Not a named entity
+
+# Optional: View full NER tree (as text format)
+#print("\nFull NER Tree (Text Format):")
+#print(ner_tree.pformat())
+
+# Optional: GUI visualization for local environments only
+# ner_tree.draw()
+1(C) – Named Entity Recognition (Treebank Corpus)
+import nltk
+from nltk.corpus import treebank
+from nltk import pos_tag, ne_chunk
+
+# Download required resources
+nltk.download('treebank')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('maxent_ne_chunker')
+nltk.download('words')
+nltk.download('maxent_ne_chunker_tab')
+
+# Step 1: Load a sample sentence from the Treebank corpus
+sentence = treebank.sents()[0]
+print("Treebank Sentence:\n", ' '.join(sentence))
+
+# Step 2: POS tagging
+pos_tags = pos_tag(sentence)
+
+
+
+# Step 3: Named Entity Recognition
+ner_tree = ne_chunk(pos_tags)
+
+# Step 4: Print named entities
+print("\nNamed Entities:")
+for subtree in ner_tree:
+    if hasattr(subtree, 'label'):
+        entity = " ".join(word for word, tag in subtree.leaves())
+        print(f"{entity} ({subtree.label()})")
+
+# Step 5: Text version of NER Tree
+print("\nNER Tree (Text Format):")
+print(ner_tree.pformat())
