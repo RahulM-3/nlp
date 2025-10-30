@@ -37,7 +37,8 @@ print(chunked_tree.pformat())  # This prints the chunk tree as a formatted strin
 
 # Step 8: If GUI supported locally, uncomment below line
 # chunked_tree.draw()
-1(B) – Named Entity Recognition (User Input)
+
+#1(B) – Named Entity Recognition (User Input)
 import nltk
 from nltk import word_tokenize, pos_tag, ne_chunk
 
@@ -78,7 +79,8 @@ for subtree in ner_tree:
 
 # Optional: GUI visualization for local environments only
 # ner_tree.draw()
-1(C) – Named Entity Recognition (Treebank Corpus)
+
+#1(C) – Named Entity Recognition (Treebank Corpus)
 import nltk
 from nltk.corpus import treebank
 from nltk import pos_tag, ne_chunk
